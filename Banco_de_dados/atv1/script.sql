@@ -1,0 +1,11 @@
+CREATE TABLE turma (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE Aluno (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    turma_id INT,
+    FOREIGN KEY (turma_id) REFERENCES Turma(id)
+);
