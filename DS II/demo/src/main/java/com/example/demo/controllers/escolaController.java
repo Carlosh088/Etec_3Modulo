@@ -5,24 +5,21 @@ import java.util.List;
 
 import com.example.demo.models.Aluno;
 import com.example.demo.models.Professor;
-
-import jakarta.validation.Valid;
-
 import com.example.demo.models.Pessoa;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/escola")
 public class escolaController {
-    public List<Pessoa> pessoas = new ArrayList<Pessoa>();
-    
-    @RequestMapping("/listarAlunos")
+    private final List<Pessoa> pessoas = new ArrayList<>();
+
+    @GetMapping("/listarAlunos")
     public List<Aluno> listarAlunos() {
-        List<Aluno> alunos = new ArrayList<Aluno>();
+        List<Aluno> alunos = new ArrayList<>();
         for (Pessoa pessoa : pessoas) {
             if (pessoa instanceof Aluno) {
                 alunos.add((Aluno) pessoa);
@@ -31,9 +28,9 @@ public class escolaController {
         return alunos;
     }
 
-    @RequestMapping("/listarProfessores")
+    @GetMapping("/listarProfessores")
     public List<Professor> listarProfessores() {
-        List<Professor> professores = new ArrayList<Professor>();
+        List<Professor> professores = new ArrayList<>();
         for (Pessoa pessoa : pessoas) {
             if (pessoa instanceof Professor) {
                 professores.add((Professor) pessoa);
@@ -43,25 +40,29 @@ public class escolaController {
     }
 
     @PostMapping("/cadastrarAluno")
-    public void cadastrarAluno(Aluno aluno) {
+    public ResponseEntity<String> cadastrarAluno(@RequestBody @Valid Aluno aluno) {
         pessoas.add(aluno);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Aluno cadastrado com sucesso!");
     }
 
     @PostMapping("/cadastrarProfessor")
-    public void cadastrarProfessor(Professor professor) {
+    public ResponseEntity<String> cadastrarProfessor(@RequestBody @Valid Professor professor) {
         pessoas.add(professor);
-    }   
+        return ResponseEntity.status(HttpStatus.CREATED).body("Professor cadastrado com sucesso!");
+    }
 
     @PutMapping("/atualizarAluno")
-        public String atualizarAluno(@RequestBody @Valid aluno alunoAtualizado) {
-            for (int i = 0; i < pessoas.size(); i++){
-                if (pessoas.get(i) instanceof aluno && pessoas.get(i).getCpf().equals(alunoAtualizado.getCpf()) && pessoas.get(i).getIdade() >= 18){
+    public String atualizarAluno(@RequestBody @Valid Aluno alunoAtualizado) {
+        for (int i = 0; i < pessoas.size(); i++) {
+            Pessoa p = pessoas.get(i);
+            if (p instanceof Aluno) {
+                Aluno aluno = (Aluno) p;
+                if (aluno.getCpf().equals(alunoAtualizado.getCpf()) && aluno.getIdade() >= 18) {
                     pessoas.set(i, alunoAtualizado);
                     return "Aluno atualizado com sucesso!";
                 }
-
-                return "Aluno não encontrado ou menor de idade!";
-
             }
         }
+        return "Aluno não encontrado ou menor de idade!";
     }
+}
