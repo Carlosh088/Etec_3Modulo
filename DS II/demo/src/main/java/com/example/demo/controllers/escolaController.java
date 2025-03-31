@@ -65,4 +65,20 @@ public class escolaController {
         }
         return "Aluno não encontrado ou menor de idade!";
     }
+
+    @PutMapping("/atualizarProfessor")
+public String atualizarProfessor(@RequestBody @Valid Professor professorAtualizado) {
+    for (int i = 0; i < pessoas.size(); i++) {
+        Pessoa p = pessoas.get(i);
+        if (p instanceof Professor) {
+            Professor professor = (Professor) p;
+            if (professor.getCpf().equals(professorAtualizado.getCpf()) && professor.getIdade() >= 18) {
+                pessoas.set(i, professorAtualizado);
+                return "Professor atualizado com sucesso!";
+            }
+        }
+    }
+    return "Professor não encontrado ou menor de idade!";
+}
+
 }
