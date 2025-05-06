@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Meu App Firebase</title>
+  <link rel="stylesheet" href="login.css">
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBQnvBFw7cwQVWpKbQSi9N6uCLJCzwHZq8",
+      authDomain: "tela-de-login-d26dc.firebaseapp.com",
+      projectId: "tela-de-login-d26dc",
+      storageBucket: "tela-de-login-d26dc.appspot.com", 
+      messagingSenderId: "738013422178",
+      appId: "1:738013422178:web:a57180330988589f09e73b",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+
+    window.registerUser = () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          console.log("Usuário registrado:", userCredential.user);
+          alert("Usuário criado com sucesso!");
+
+          sendEmailVerification(userCredential.user)
+            .then(() => {
+              alert("Verificação enviada para o e-mail.");
+            })
+            .catch((error) => {
+              console.error("Erro ao enviar verificação:", error.message);
+            });
+        })
+        .catch((error) => {
+          console.error("Erro no registro:", error.code, error.message);
+          alert("Erro: " + error.message);
+        });
+    };
+
+    window.loginUser = () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          console.log("Login realizado:", userCredential.user);
+          alert("Login bem-sucedido!");
+        })
+        .catch((error) => {
+          console.error("Erro no login:", error.code, error.message);
+          alert("Erro: " + error.message);
+        });
+    };
+
+    window.resetPassword = () => {
+      const email = document.getElementById("email").value;
+
+      if (!email) {
+        alert("Informe o e-mail para redefinir a senha.");
+        return;
+      }
+
+      sendPasswordResetEmail(auth, email)
+        .then(() => {
+          alert("E-mail de redefinição de senha enviado!");
+        })
+        .catch((error) => {
+          console.error("Erro ao enviar redefinição:", error.code, error.message);
+          alert("Erro: " + error.message);
+        });
+    };
+  </script>
+</head>
+<body>
+    <main>
+     <h1>Meu App</h1>
+     <p>Usuário:</p>
+     <br>
+     <input type="text" id="email" placeholder="Digite seu email">
+     <br>
+     <p>Senha:</p>
+     <br>
+     <input type="password" id="password" placeholder="Digite sua senha">
+     <br>
+     <br>
+     <button type="button" onclick="loginUser()">Login</button>
+     <button type="button" onclick="registerUser()">Registrar-se</button>
+     <button type="button" onclick="resetPassword()">Esqueci minha senha</button>
+  </main>
+</body>
+</html>
